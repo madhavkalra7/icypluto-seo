@@ -1,9 +1,9 @@
 ---
-name: "icypluto"
+name: "icypluto-seo"
 description: "Actively audits, diagnoses, and heals web codebases recursively using local headless Lighthouse feedback until performance, SEO, accessibility, and best practices scores are maximized."
 ---
 
-# Icypluto Web Optimizer Skill
+# Icypluto SEO Optimizer Skill
 
 This skill guides you (the AI Agent) through a programmatic **"Lighthouse Self-Healing"** loop. Running this skill ensures that you compile the site, launch it locally, run an automated headless Lighthouse audit, inspect the JSON diagnostics, apply code fixes, and **recursively repeat this loop** until all scores (SEO, Performance, Accessibility, Best Practices) meet target thresholds.
 
