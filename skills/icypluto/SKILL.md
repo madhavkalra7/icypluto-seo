@@ -64,8 +64,11 @@ Follow the detailed sub-task guides for step-by-step resolution:
 *   **[Structured Schema Guide](./structured_data.md)**: Adapting structured metadata to business niches.
 *   **[Brand Authority & Sentiment Guide](./brand_authority.md)**: FAQ generation and crawler-readable review sections.
 
-### Phase 5: Execute and Validate Changes
-Apply the fixes directly using file replacement tools. Ensure you run build steps (e.g., `npm run build` or `npm run dev`) to verify that the edits compile successfully without errors.
+### Phase 5: Execute, Compile & Strictly Verify Changes
+1.  **Apply Code Edits**: Modify the target layout, sitemap, meta tags, buttons, and image components directly in the files.
+2.  **Strict Verification Check**: You **MUST run the build command (`npm run build`) automatically at the end of the optimization process**. Do not prompt the user for permission or ask if you should run it—execute the command directly.
+3.  **Compile-Error Handling Loop**: If `npm run build` returns compilation or linter errors, you must inspect the log, repair the code, and re-run `npm run build` automatically. Repeat this loop until the build succeeds.
+4.  **Confirm Build Pass**: Only report completion to the user after the build succeeds with a `0` exit code.
 
 ---
 
