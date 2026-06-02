@@ -55,6 +55,7 @@ Examine the page components and layouts to identify high-impact issues:
 *   **Accessibility**: Find buttons with no text or accessible names, or images without `alt` attributes.
 *   **Performance & CLS**: Find `<img>` tags missing explicit `width` and `height` dimensions.
 *   **Render-Blocking**: Find scripts in the `<head>` that can be deferred or loaded asynchronously.
+*   **Performance Safety Barrier**: If you inject any visible UI components (FAQ accordions, testimonial feeds, matrices), you MUST ensure they have styling wrappers that prevent layout shift.
 
 ### Phase 4: Apply Specialized Guides
 Follow the detailed sub-task guides for step-by-step resolution:
@@ -62,13 +63,14 @@ Follow the detailed sub-task guides for step-by-step resolution:
 *   **[Performance & Accessibility Guide](./performance_accessibility.md)**: Fixing CLS layout shifts, render-blocking resources, button names, and image dimensions.
 *   **[Generative Engine Optimization (GEO) Guide](./geo_optimization.md)**: Content formatting for AI citations.
 *   **[Structured Schema Guide](./structured_data.md)**: Adapting structured metadata to business niches.
-*   **[Brand Authority & Sentiment Guide](./brand_authority.md)**: FAQ generation and crawler-readable review sections.
+*   **[Brand Authority & Sentiment Guide](./brand_authority.md)**: FAQ generation and crawler-readable review sections with layout shift containment.
 
 ### Phase 5: Execute, Compile & Strictly Verify Changes
 1.  **Apply Code Edits**: Modify the target layout, sitemap, meta tags, buttons, and image components directly in the files.
-2.  **Strict Verification Check**: You **MUST run the build command (`npm run build`) automatically at the end of the optimization process**. Do not prompt the user for permission or ask if you should run it—execute the command directly.
-3.  **Compile-Error Handling Loop**: If `npm run build` returns compilation or linter errors, you must inspect the log, repair the code, and re-run `npm run build` automatically. Repeat this loop until the build succeeds.
-4.  **Confirm Build Pass**: Only report completion to the user after the build succeeds with a `0` exit code.
+2.  **Verify Layout Shift Safety**: Double-check that no newly added elements cause page shifts (CLS). Ensure all injected lists/FAQs have inline default styles or stylesheets specifying height/padding.
+3.  **Strict Verification Check**: You **MUST run the build command (`npm run build`) automatically at the end of the optimization process**. Do not prompt the user for permission or ask if you should run it—execute the command directly.
+4.  **Compile-Error Handling Loop**: If `npm run build` returns compilation or linter errors, you must inspect the log, repair the code, and re-run `npm run build` automatically. Repeat this loop until the build succeeds.
+5.  **Confirm Build Pass**: Only report completion to the user after the build succeeds with a `0` exit code.
 
 ---
 
