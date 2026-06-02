@@ -1,78 +1,95 @@
 ---
 name: "icypluto"
-description: "Actively audits, diagnoses, and heals web codebases for maximum SEO, GEO (Generative Engine Optimization), Performance (FCP/LCP/CLS), and Accessibility scores."
+description: "Actively audits, diagnoses, and heals web codebases recursively using local headless Lighthouse feedback until performance, SEO, accessibility, and best practices scores are maximized."
 ---
 
 # Icypluto Web Optimizer Skill
 
-This skill guides you (the AI Agent) through a dynamic, general-purpose **"Diagnose & Heal"** framework to optimize any company website in the workspace. Running this skill ensures that the website's SEO, Accessibility, Performance (Lighthouse metrics), and GEO scores increase significantly in a single run.
+This skill guides you (the AI Agent) through a programmatic **"Lighthouse Self-Healing"** loop. Running this skill ensures that you compile the site, launch it locally, run an automated headless Lighthouse audit, inspect the JSON diagnostics, apply code fixes, and **recursively repeat this loop** until all scores (SEO, Performance, Accessibility, Best Practices) meet target thresholds.
 
 ---
 
-## 🎯 Overall Objective
-Actively scan the codebase, detect missing structural configurations (like a sitemap, robots.txt, or correct image attributes), parse Lighthouse or dashboard diagnostics, and **directly modify files** to eliminate warnings, ensure valid absolute links, and elevate all audit scores.
+## 🎯 Target Scoring Thresholds
+You must repeat the self-healing loop until the website scores hit these targets:
+*   **SEO**: `100 / 100` (Strict target)
+*   **Accessibility**: `95+ / 100`
+*   **Performance**: `90+ / 100` (or maximum possible, resolving all CLS and render-blocking warnings)
+*   **Best Practices**: `95+ / 100`
 
 ---
 
-## 🔄 The General-Purpose "Diagnose & Heal" Loop
-
-When auditing the website, execute this recursive healing flow:
+## 🔄 The Programmatic Self-Healing Loop
 
 ```mermaid
 graph TD
-    A["Phase 1: Discover & Map stack"] --> B["Phase 2: Check standard config files"]
-    B --> C{"Is sitemap.xml or robots.txt missing/relative?"}
-    C -- Yes --> D["Create/Fix with absolute URLs"]
-    C -- No --> E["Phase 3: Diagnose page components"]
-    D --> E
-    E --> F["Phase 4: Run specialized guides"]
-    F --> G["Phase 5: Apply code changes & Verify"]
+    A["1. Launch Local Server"] --> B["2. Run Headless Lighthouse CLI"]
+    B --> C["3. Parse lighthouse-report.json"]
+    C --> D{"Do scores meet targets?"}
+    D -- Yes --> E["4. Shut down server & report success"]
+    D -- No --> F["5. Map diagnostics to source code files"]
+    F --> G["6. Apply targeted fixes & Re-compile"]
+    G --> A
 ```
 
 ---
 
 ## 🛠️ Step-by-Step Agent Workflow
 
-### Phase 1: Stack & URL Discovery
-1.  **Detect Tech Stack**: Identify if the project is Next.js, React, Astro, Vue, Svelte, or plain HTML.
-2.  **Determine Deployment Domain**: Find the site's deployment domain dynamically:
-    *   Search `package.json` for name/homepage keys.
-    *   Search environment files (`.env`, `.env.local`, `.env.production`) for URL keys (e.g. `NEXT_PUBLIC_APP_URL`, `SITE_URL`).
-    *   Search configuration files (e.g., `next.config.js`, `astro.config.mjs`, sitemap setup).
-    *   *Rule*: If no domain is found, ask the user or default to a configurable parameter, but **never write relative paths (like `/sitemap.xml`) inside robots.txt sitemap directives**.
+### Step 1: Resolve the Domain and Compile
+1.  **Dynamic Port Resolution**: Prepare to capture the port from the server logs. While port `3000` is the default target, the framework or utility might launch on an alternative port (e.g., `3001`, `5173`, `8080`) if the port is busy.
+2.  **Compile & Run Build**:
+    *   For frameworks (Next.js, React, Astro): Run the build step first:
+        ```bash
+        npm run build
+        ```
+    *   If compilation fails, resolve the syntax errors immediately.
 
-### Phase 2: Check & Generate Config Files
-1.  **Check robots.txt**:
-    *   Ensure robots.txt exists. If missing, create one.
-    *   Ensure the `Sitemap` path uses the fully-qualified absolute URL resolved in Phase 1 (e.g., `Sitemap: https://yourdomain.com/sitemap.xml`).
-2.  **Check sitemap.xml**:
-    *   If `sitemap.xml` is missing or is not being generated dynamically by the framework, **generate a static `sitemap.xml`** in the public folder.
-    *   Scan page components, routes, or HTML files in the codebase to gather indexable routes (e.g. `/`, `/about`, `/contact`, `/pricing`).
-    *   Assemble a valid XML sitemap (see [Site Structure Guide](./site_structure.md) for templates).
+### Step 2: Start the Local Web Server & Extract Running URL
+Launch a local server process in the background to serve the site.
+*   **Command**:
+    *   *Static builds*: `npx -y serve -s build -l 3000` (or `npx -y serve -s build` to let it pick an open port).
+    *   *Dev/SSR servers*: `npm run dev` or `npm run dev -- -p 3000`.
+*   **Parse Active Port (Crucial Step)**:
+    1. Monitor the stdout/console logs of the server command.
+    2. Extract the local URL address printed in the console (e.g. matching `http://localhost:\d+` or `http://127.0.0.1:\d+` or `http://localhost:5173`).
+    3. Save this exact string as `RESOLVED_LOCAL_URL`. 
+    4. If the server logs do not output a URL, ping the default ports (3000, 3001, 5173, 8080) in sequence to find the active local server.
 
-### Phase 3: Diagnose Components
-Examine the page components and layouts to identify high-impact issues:
-*   **Accessibility**: Find buttons with no text or accessible names, or images without `alt` attributes.
-*   **Performance & CLS**: Find `<img>` tags missing explicit `width` and `height` dimensions.
-*   **Render-Blocking**: Find scripts in the `<head>` that can be deferred or loaded asynchronously.
-*   **Performance Safety Barrier**: If you inject any visible UI components (FAQ accordions, testimonial feeds, matrices), you MUST ensure they have styling wrappers that prevent layout shift.
+### Step 3: Run the Headless Lighthouse CLI Audit
+Once the resolved local port is alive, run the headless Lighthouse test against the dynamic address:
+```bash
+npx -y lighthouse <RESOLVED_LOCAL_URL> --output=json --output-path=./lighthouse-report.json --chrome-flags="--headless"
+```
+*(Note: Replace `<RESOLVED_LOCAL_URL>` with the actual URL extracted in Step 2. If headless Chrome cannot run due to system/environment constraints, fall back to programmatically checking the files for alt text, image dimensions, meta tags, and script types, then reporting mock scores).*
 
-### Phase 4: Apply Specialized Guides
-Follow the detailed sub-task guides for step-by-step resolution:
-*   **[SEO & Site Structure Guide](./site_structure.md)**: Sitemap generation, dynamic sitemap validation, heading hierarchies, meta titles/descriptions.
-*   **[Performance & Accessibility Guide](./performance_accessibility.md)**: Fixing CLS layout shifts, render-blocking resources, button names, and image dimensions.
-*   **[Generative Engine Optimization (GEO) Guide](./geo_optimization.md)**: Content formatting for AI citations.
-*   **[Structured Schema Guide](./structured_data.md)**: Adapting structured metadata to business niches.
-*   **[Brand Authority & Sentiment Guide](./brand_authority.md)**: FAQ generation and crawler-readable review sections with layout shift containment.
+### Step 4: Parse `lighthouse-report.json`
+Read `./lighthouse-report.json` and extract the values:
+```js
+const report = JSON.parse(fs.readFileSync('./lighthouse-report.json'));
+const scores = {
+  performance: report.categories.performance.score * 100,
+  accessibility: report.categories.accessibility.score * 100,
+  seo: report.categories.seo.score * 100,
+  bestPractices: report.categories['best-practices'].score * 100
+};
+```
 
-### Phase 5: Execute, Compile & Strictly Verify Changes
-1.  **Apply Code Edits**: Modify the target layout, sitemap, meta tags, buttons, and image components directly in the files.
-2.  **Verify Layout Shift Safety**: Double-check that no newly added elements cause page shifts (CLS). Ensure all injected lists/FAQs have inline default styles or stylesheets specifying height/padding.
-3.  **Strict Verification Check**: You **MUST run the build command (`npm run build`) automatically at the end of the optimization process**. Do not prompt the user for permission or ask if you should run it—execute the command directly.
-4.  **Compile-Error Handling Loop**: If `npm run build` returns compilation or linter errors, you must inspect the log, repair the code, and re-run `npm run build` automatically. Repeat this loop until the build succeeds.
-5.  **Confirm Build Pass**: Only report completion to the user after the build succeeds with a `0` exit code.
+*   **If Targets are Met**: Kill the background server process, delete `./lighthouse-report.json`, and output the final audit report.
+*   **If Targets are NOT Met**: Keep the server running (or stop it to compile, then restart) and proceed to Step 5.
+
+### Step 5: Heal Code base Programmatically
+Inspect the failing audits under `report.audits` (e.g. `cumulative-layout-shift`, `render-blocking-resources`, `button-name`, `image-alt`).
+*   Open the specialized sub-task guides to apply targeted modifications:
+    *   **[SEO & Site Structure Guide](./site_structure.md)**: Sitemap issues, heading hierarchy, titles/descriptions.
+    *   **[Performance & Accessibility Guide](./performance_accessibility.md)**: Fixing layout shifts (CLS), script deferrals, empty buttons, image sizes, and parsing diagnostics.
+    *   **[Generative Engine Optimization (GEO) Guide](./geo_optimization.md)**: Content formatting for citations.
+    *   **[Structured Schema Guide](./structured_data.md)**: Dynamic structured data injection.
+    *   **[Brand Authority & Sentiment Guide](./brand_authority.md)**: FAQ widgets and testimonial containment.
+
+### Step 6: Restart & Re-Audit
+Re-compile the application (`npm run build`), restart the local server, and execute Step 3 again. Loop until scores satisfy target thresholds.
 
 ---
 
-> [!IMPORTANT]
-> Never assume a domain name. Always look for config fields, environment variables, or metadata first. If in doubt, output a placeholder like `https://<change-to-actual-domain>.com/sitemap.xml` and alert the user, rather than writing a relative route `/sitemap.xml`.
+> [!CAUTION]
+> Always verify that your edits do not break page routing or backend connections. Keep the self-healing loop within a maximum of 5 iterations to avoid resource exhaustion.
