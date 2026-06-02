@@ -1,99 +1,81 @@
 # Structured Schema Optimization Guide
 
-Search engine crawlers and LLMs rely on structured metadata to establish brand entities. By injecting Schema.org JSON-LD blocks, you explicitly define the brand name, description, social handles, founders, products, and target audience, ensuring search algorithms index the brand correctly and display knowledge graphs.
+Search engine engines and AI assistants use Schema.org configurations to resolve entity context (resolving brand details, products, founders, official websites, and social links).
 
-This guide provides templates and instructions for you (the AI Agent) to programmatically generate and inject JSON-LD schemas into the website codebase.
+This guide provides instructions for you (the AI Agent) to dynamically construct and inject schemas depending on the website's specific niche.
 
 ---
 
-## 📋 Recommended Schemas & Templates
+## 🏗️ Dynamic Schema Generation Blueprint
 
-### 1. Organization Schema
-Place this on the main home/landing page of the website. It establishes the company's identity.
+### Step 1: Detect the Business Category
+Check the site's copy and metadata to classify the entity:
+1.  **Corporate/Brand Website**: Use `Organization` + `WebSite` schemas.
+2.  **SaaS/Product Website**: Use `Organization` + `SoftwareApplication` / `Product` schemas.
+3.  **Local Service Business**: Use `LocalBusiness` + `Service` schemas.
 
+### Step 2: Construct the Structured JSON-LD Payload
+Write the JSON block using the relevant structure from the templates below, substituting fields dynamically using the resolved domain and brand variants.
+
+#### Niche Template A: Organization & Website
 ```json
 {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Icypluto",
-  "alternateName": ["Pluto Brand Tracker", "Icypluto App"],
-  "url": "https://icypluto.com",
-  "logo": "https://icypluto.com/logo.png",
-  "description": "An AI-powered brand visibility, SOV, and competitor tracker built to audit search engine mentions.",
-  "sameAs": [
-    "https://twitter.com/icypluto",
-    "https://github.com/icypluto",
-    "https://www.linkedin.com/company/icypluto"
-  ],
-  "founder": {
-    "@type": "Person",
-    "name": "Icypluto Founder"
-  }
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "{{RESOLVED_DOMAIN}}/#organization",
+      "name": "{{BRAND_NAME}}",
+      "url": "{{RESOLVED_DOMAIN}}",
+      "logo": "{{RESOLVED_DOMAIN}}/logo.png",
+      "sameAs": [
+        "https://twitter.com/{{TWITTER_HANDLE}}",
+        "https://linkedin.com/company/{{LINKEDIN_SLUG}}"
+      ],
+      "description": "{{BRAND_DESCRIPTION}}"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "{{RESOLVED_DOMAIN}}/#website",
+      "url": "{{RESOLVED_DOMAIN}}",
+      "name": "{{BRAND_NAME}}",
+      "publisher": {
+        "@id": "{{RESOLVED_DOMAIN}}/#organization"
+      }
+    }
+  ]
 }
 ```
 
-### 2. SoftwareApplication (SaaS) Schema
-If the website represents a SaaS application or digital tool, define the application schema to boost product reviews visibility.
-
+#### Niche Template B: SoftwareApplication (SaaS)
+If the site represents a software product, append the following entity:
 ```json
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "Icypluto Brand Visibility Tracker",
+  "name": "{{PRODUCT_NAME}}",
   "operatingSystem": "All",
   "applicationCategory": "BusinessApplication",
   "offers": {
     "@type": "Offer",
-    "price": "49.00",
+    "price": "0.00",
     "priceCurrency": "USD"
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.8",
-    "ratingCount": "120"
   }
 }
 ```
 
 ---
 
-## 🛠️ Step-by-Step Agent Injection Workflow
+## 🛠️ Step-by-Step Injection Instructions
 
-Follow these steps to generate and inject structured data into the workspace:
-
-### Step 1: Collect Brand Details
-Query or crawl the website files to extract:
-*   Official name & alternate names
-*   Logo file path or URL
-*   Core description
-*   Social media profile URLs
-
-### Step 2: Select Injection Target
-Identify the template system of the site:
-*   **Next.js (App Router)**: Add it to the root `app/layout.tsx` (or target page layout) by rendering it inside a standard `<script>` tag:
-    ```tsx
-    export default function RootLayout({ children }) {
-      const schemaData = { /* Schema JSON */ };
-      return (
-        <html lang="en">
-          <head>
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
-            />
-          </head>
-          <body>{children}</body>
-        </html>
-      );
-    }
-    ```
-*   **Static HTML / Vite**: Locate the main `index.html` file and append the script block before the closing `</head>` tag.
-
-### Step 3: Validate Code Changes
-*   Ensure that JSON-LD is properly escaped to avoid syntax issues.
-*   Ensure there are no trailing commas in the JSON block, which will cause search engines to reject the script.
-
----
-
-> [!TIP]
-> Use multiple schemas combined in a single array or referenced via `@graph` inside a single script tag to reduce code footprint.
+1.  **Resolve Domain and Brand Name**: Extract these from codebase configs as instructed in [SKILL.md](./SKILL.md).
+2.  **Locate Root Layout/Template**:
+    *   *Next.js*: Find the root layout (`app/layout.tsx` or `pages/_document.tsx`).
+    *   *React/Vite/Static HTML*: Find the main template or `index.html` head tags.
+3.  **Inject the Script Block**:
+    *   Insert the JSON-LD payload wrapped in `<script type="application/ld+json">`.
+    *   *Critical Performance Rule*: Ensure the structured data script does not block initial load. In React/Next.js frameworks, wrap the injection using dangerouslySetInnerHTML or load it inside page layouts rather than heavy blocking JS components.
+4.  **Validate Schema Integrity**:
+    *   Verify that all JSON keys are properly double-quoted.
+    *   Verify that no trailing commas are present.
+    *   Verify that all URLs in the schema use absolute paths (with the correct protocol: `https://`).

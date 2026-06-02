@@ -1,60 +1,73 @@
 ---
 name: "icypluto"
-description: "Actively audits, refines, and optimizes website codebases for Generative Engine Optimization (GEO), SEO, Schema structured data, and brand visibility scores."
+description: "Actively audits, diagnoses, and heals web codebases for maximum SEO, GEO (Generative Engine Optimization), Performance (FCP/LCP/CLS), and Accessibility scores."
 ---
 
 # Icypluto Web Optimizer Skill
 
-This skill guides you (the AI Agent) through a step-by-step framework to audit and actively optimize any company website in the workspace. By running this skill, you will improve the website's technical structure, JSON-LD schema metadata, content authority, and search visibility, making it highly discoverable and highly ranked by search engines and generative AI search agents (e.g. SearchGPT, Perplexity, Gemini, Claude, Copilot).
+This skill guides you (the AI Agent) through a dynamic, general-purpose **"Diagnose & Heal"** framework to optimize any company website in the workspace. Running this skill ensures that the website's SEO, Accessibility, Performance (Lighthouse metrics), and GEO scores increase significantly in a single run.
 
 ---
 
 ## 🎯 Overall Objective
-When the user invokes this skill, analyze the website codebase, identify visibility gaps, and **automatically perform modifications** (such as creating schemas, correcting heading hierarchies, injecting SEO meta tags, and formatting content for LLM citation algorithms) to guarantee maximum performance scores.
+Actively scan the codebase, detect missing structural configurations (like a sitemap, robots.txt, or correct image attributes), parse Lighthouse or dashboard diagnostics, and **directly modify files** to eliminate warnings, ensure valid absolute links, and elevate all audit scores.
+
+---
+
+## 🔄 The General-Purpose "Diagnose & Heal" Loop
+
+When auditing the website, execute this recursive healing flow:
+
+```mermaid
+graph TD
+    A["Phase 1: Discover & Map stack"] --> B["Phase 2: Check standard config files"]
+    B --> C{"Is sitemap.xml or robots.txt missing/relative?"}
+    C -- Yes --> D["Create/Fix with absolute URLs"]
+    C -- No --> E["Phase 3: Diagnose page components"]
+    D --> E
+    E --> F["Phase 4: Run specialized guides"]
+    F --> G["Phase 5: Apply code changes & Verify"]
+```
 
 ---
 
 ## 🛠️ Step-by-Step Agent Workflow
 
-Follow this procedure to optimize the workspace website:
+### Phase 1: Stack & URL Discovery
+1.  **Detect Tech Stack**: Identify if the project is Next.js, React, Astro, Vue, Svelte, or plain HTML.
+2.  **Determine Deployment Domain**: Find the site's deployment domain dynamically:
+    *   Search `package.json` for name/homepage keys.
+    *   Search environment files (`.env`, `.env.local`, `.env.production`) for URL keys (e.g. `NEXT_PUBLIC_APP_URL`, `SITE_URL`).
+    *   Search configuration files (e.g., `next.config.js`, `astro.config.mjs`, sitemap setup).
+    *   *Rule*: If no domain is found, ask the user or default to a configurable parameter, but **never write relative paths (like `/sitemap.xml`) inside robots.txt sitemap directives**.
 
-### Phase 1: Discover & Analyze Website Structure
-1. **Detect Tech Stack**: Identify the frontend framework by searching for configuration files (e.g., `package.json`, `next.config.js`, `astro.config.mjs`, or static `index.html` files).
-2. **Locate Key Templates**: Find the entry files where head metadata, global layouts, and main landing page markup are defined.
-3. **Parse Current Metadata**: Examine existing HTML `<head>` tags, titles, headings, and schema blocks.
+### Phase 2: Check & Generate Config Files
+1.  **Check robots.txt**:
+    *   Ensure robots.txt exists. If missing, create one.
+    *   Ensure the `Sitemap` path uses the fully-qualified absolute URL resolved in Phase 1 (e.g., `Sitemap: https://yourdomain.com/sitemap.xml`).
+2.  **Check sitemap.xml**:
+    *   If `sitemap.xml` is missing or is not being generated dynamically by the framework, **generate a static `sitemap.xml`** in the public folder.
+    *   Scan page components, routes, or HTML files in the codebase to gather indexable routes (e.g. `/`, `/about`, `/contact`, `/pricing`).
+    *   Assemble a valid XML sitemap (see [Site Structure Guide](./site_structure.md) for templates).
 
-### Phase 2: Run Specialized Audits
-Execute detailed assessments using the sub-task guides. Link directly to these sub-tasks to guide your execution step-by-step:
-*   [**Generative Engine Optimization (GEO) Audit**](./geo_optimization.md): Learn how to rewrite content for AI search citations.
-*   [**Structured Schema Injection**](./structured_data.md): Format and inject robust JSON-LD schema configurations for Google and LLMs.
-*   [**Brand Authority & Sentiment Builder**](./brand_authority.md): Optimize textual authority keywords and FAQs to improve public perception.
-*   [**Technical Site Structure Optimization**](./site_structure.md): Format headings (`h1` - `h6`), navigation, and title tags correctly.
+### Phase 3: Diagnose Components
+Examine the page components and layouts to identify high-impact issues:
+*   **Accessibility**: Find buttons with no text or accessible names, or images without `alt` attributes.
+*   **Performance & CLS**: Find `<img>` tags missing explicit `width` and `height` dimensions.
+*   **Render-Blocking**: Find scripts in the `<head>` that can be deferred or loaded asynchronously.
 
-### Phase 3: Execute Code Modifications
-Do not just list changes—**actively edit the code** using replacement tools to apply the following:
-1.  **Add/Fix Schema**: Generate and inject a unified `Organization` and `WebSite` JSON-LD schema into the global layout.
-2.  **Optimize Meta Tags**: Ensure every page has a unique, descriptive `<title>` and `<meta name="description" content="...">`.
-3.  **Optimize Headings**: Ensure there is exactly one `<h1>` per page, representing the primary brand proposition, and logical `<h2>` / `<h3>` headings.
-4.  **Inject GEO Elements**: Add factual statistics, direct expert quotes, or clear definition summaries to help LLMs cite the company as a primary resource.
+### Phase 4: Apply Specialized Guides
+Follow the detailed sub-task guides for step-by-step resolution:
+*   **[SEO & Site Structure Guide](./site_structure.md)**: Sitemap generation, dynamic sitemap validation, heading hierarchies, meta titles/descriptions.
+*   **[Performance & Accessibility Guide](./performance_accessibility.md)**: Fixing CLS layout shifts, render-blocking resources, button names, and image dimensions.
+*   **[Generative Engine Optimization (GEO) Guide](./geo_optimization.md)**: Content formatting for AI citations.
+*   **[Structured Schema Guide](./structured_data.md)**: Adapting structured metadata to business niches.
+*   **[Brand Authority & Sentiment Guide](./brand_authority.md)**: FAQ generation and crawler-readable review sections.
 
-### Phase 4: Verification & Report
-Compile an optimization report summarizing:
-*   Files modified (e.g., `layout.tsx`, `index.html`, etc.)
-*   JSON-LD schemas injected
-*   Optimized titles and meta descriptions
-*   Expected impact on Icypluto Visibility, GEO, and SEO scores
-
----
-
-## 📚 Core Sub-Task Guides
-
-Explore the detailed optimization manuals below to handle specific areas:
-*   **[GEO Optimization Guide](./geo_optimization.md)**: How to make the site highly indexable by Perplexity, SearchGPT, Gemini, etc.
-*   **[Structured Data & Schema Guide](./structured_data.md)**: Standardized schema templates and integration procedures.
-*   **[Brand Authority & Reputation Guide](./brand_authority.md)**: Methods for enhancing sentiment and FAQ answering.
-*   **[Technical & SEO Structure Guide](./site_structure.md)**: HTML5 semantics, sitemaps, and tag hierarchies.
+### Phase 5: Execute and Validate Changes
+Apply the fixes directly using file replacement tools. Ensure you run build steps (e.g., `npm run build` or `npm run dev`) to verify that the edits compile successfully without errors.
 
 ---
 
-> [!TIP]
-> Always preserve existing styling, classnames, and component structures. Ensure the code changes compile successfully (run `npm run build` or similar if tests/compilers are available).
+> [!IMPORTANT]
+> Never assume a domain name. Always look for config fields, environment variables, or metadata first. If in doubt, output a placeholder like `https://<change-to-actual-domain>.com/sitemap.xml` and alert the user, rather than writing a relative route `/sitemap.xml`.
