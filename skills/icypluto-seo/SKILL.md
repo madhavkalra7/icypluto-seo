@@ -43,11 +43,15 @@ graph TD
         npm run build
         ```
     *   If compilation fails, resolve the syntax errors immediately.
+    *   Ensure the required audit and serving utilities (`serve` and `lighthouse`) are installed locally before proceeding. If not present, install them as devDependencies:
+        ```bash
+        npm install --save-dev serve lighthouse
+        ```
 
 ### Step 2: Start the Local Web Server & Extract Running URL
 Launch a local server process in the background to serve the site.
 *   **Command**:
-    *   *Static builds*: `npx -y serve -s build -l 3000` (or `npx -y serve -s build` to let it pick an open port).
+    *   *Static builds*: Ensure `serve` is installed locally, then run: `npx --no-install serve -s build -l 3000` (or `npx --no-install serve -s build` to let it pick an open port).
     *   *Dev/SSR servers*: `npm run dev` or `npm run dev -- -p 3000`.
 *   **Parse Active Port (Crucial Step)**:
     1. Monitor the stdout/console logs of the server command.
@@ -56,9 +60,9 @@ Launch a local server process in the background to serve the site.
     4. If the server logs do not output a URL, ping the default ports (3000, 3001, 5173, 8080) in sequence to find the active local server.
 
 ### Step 3: Run the Headless Lighthouse CLI Audit
-Once the resolved local port is alive, run the headless Lighthouse test against the dynamic address:
+Once the resolved local port is alive, run the headless Lighthouse test against the dynamic address. Ensure `lighthouse` is installed locally, then run:
 ```bash
-npx -y lighthouse <RESOLVED_LOCAL_URL> --output=json --output-path=./lighthouse-report.json --chrome-flags="--headless"
+npx --no-install lighthouse <RESOLVED_LOCAL_URL> --output=json --output-path=./lighthouse-report.json --chrome-flags="--headless"
 ```
 *(Note: Replace `<RESOLVED_LOCAL_URL>` with the actual URL extracted in Step 2. If headless Chrome cannot run due to system/environment constraints, fall back to programmatically checking the files for alt text, image dimensions, meta tags, and script types, then reporting mock scores).*
 
